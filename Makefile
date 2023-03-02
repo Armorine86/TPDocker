@@ -15,19 +15,16 @@ down:
 build:
 	@docker-compose -f ./docker-compose.yml build
 
-network:
-	docker network create mon_reseau
-
 prune:
 	docker system prune -a
 
 clean:
 	sudo rm -rf ~/data/mariadb1/
 	sudo rm -rf ~/data/mariadb2/
-	@docker-compose -f ./docker-compose.yml down --rmi all
+	@sudo docker-compose -f ./docker-compose.yml down --rmi all
 
 vclean:
-	@docker volume rm $(shell docker volume ls -q)
+	@sudo docker volume rm $(shell docker volume ls -q)
 
 state:
 	sudo docker ps -a

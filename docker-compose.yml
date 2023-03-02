@@ -1,85 +1,85 @@
 version: '3.1'
 
 services:
-
-  php1:
-    build: ./requirements/php1
-
-  php2:
-    build: ./requirements/php2
-
-  tp3-site01:
-    image: httpd:alpine
-    volumes:
-    - ./web1/html:/usr/local/apache2/htdocs/
-
-  tp3-site02:
-    image: httpd:alpine
-    volumes:
-    - ./web2/html:/usr/local/apache2/htdocs/
-
   mariadb1:
+    container_name: mariadb1
     image: mariadb
     ports:
-      - 3808:3808
+      - 38080:3808
     environment:
       MARIADB_ROOT_PASSWORD: mypassword
     restart: always
     networks:
       - backend
     volumes:
-      - volume-mariadb1
+      - /home/biohazard/data/mariadb1/:/var/lib/mysql
 
   mariadb2:
     image: mariadb
+    container_name: mariadb2
     ports:
-      - 3809:3808
+      - 38090:3808
     environment:
       MARIADB_ROOT_PASSWORD: mypassword
     restart: always
     networks:
       - backend
     volumes:
-      - volume-mariadb2
+      - /home/biohazard/data/mariadb2/:/var/lib/mysql
+
+  php1:
+    build: ./requirements/php1
+    container_name: php1
+
+    networks:
+      - backend
+    depends_on:
+      - mariadb1
+
+  php2:
+    build: ./requirements/php2
+    container_name: php2
+    networks:
+      - backend
+    depends_on:
+      - mariadb2
+
+  site01:
+    image: httpd:alpine
+    container_name: site01
+    networks:
+      - frontend
+    depends_on:
+      - mariadb1
+      - php1
+    volumes:
+    - ./requirements/site01/html:/usr/local/apache2/htdocs/
+
+  site02:
+    image: httpd:alpine
+    networks:
+      - frontend
+    depends_on:
+      - mariadb2
+      - php2
+    volumes:
+    - ./requirements/site02/html:/usr/local/apache2/htdocs/
 
   nginx:
     build: ./requirements/nginx
     depends_on:
-      - php1
-      - php2
-      - tp3-site01
-      - tp3-site02
       - mariadb1
       - mariadb2
     ports:
-      - 8080:80
-      - 443:443
+      - 80:80
     restart: always
     networks:
       - frontend
     volumes:
-        - ./nginx/conf/default.conf:/etc/nginx/conf.d/default.conf:ro
-      # - ./site01/html:/usr/share/nginx/html/tp3-site01.com/
-      # - ./site01/conf:etc/nginx/conf.d/
-      # - ./site02/html:/usr/share/nginx/html/tp3-site02.com/
-      # - ./site02/conf:etc/nginx/conf.d/
+        - ./requirements/nginx/conf/default.conf:/etc/nginx/conf.d/default.conf
+        - ./requirements/site01/html:/usr/share/nginx/html/site01.com
+        - ./requirements/site02/html:/usr/share/nginx/html/site02.com
 
 networks:
   frontend:
   backend:
-
-volumes:
-  volume-mariadb1:
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: /home/biohazard/data/mariadb1/:/var/lib/mysql
-
-  volume-mariadb2:
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: /home/biohazard/data/mariadb2/:/var/lib/mysql
-
