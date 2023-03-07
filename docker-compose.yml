@@ -71,7 +71,7 @@ services:
       - mariadb1
       - mariadb2
     ports:
-      - 80:80
+      - 8080:80
     restart: always
     networks:
       - frontend
