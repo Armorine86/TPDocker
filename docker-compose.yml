@@ -68,10 +68,10 @@ services:
   nginx:
     build: ./requirements/nginx
     depends_on:
-      - mariadb1
-      - mariadb2
+      - site01
+      - site02
     ports:
-      - 8080:80
+      - 80:80
     restart: always
     networks:
       - frontend
