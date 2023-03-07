@@ -12,7 +12,7 @@ services:
     networks:
       - backend
     volumes:
-      - /home/biohazard/data/mariadb1/:/var/lib/mysql
+      - ~/data/mariadb1:/var/lib/mysql
 
   mariadb2:
     image: mariadb
@@ -25,7 +25,7 @@ services:
     networks:
       - backend
     volumes:
-      - /home/biohazard/data/mariadb2/:/var/lib/mysql
+      - ~/data/mariadb1:/var/lib/mysql
 
   php1:
     build: ./requirements/php1

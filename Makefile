@@ -1,8 +1,8 @@
 all: main
 
 main:
-	sudo mkdir -p /home/biohazard/data/mariadb1/
-	sudo mkdir -p /home/biohazard/data/mariadb2/
+	sudo mkdir -p ~/data/mariadb1/
+	sudo mkdir -p ~/data/mariadb2/
 	@docker-compose -f ./docker-compose.yml up --build
 
 up:
