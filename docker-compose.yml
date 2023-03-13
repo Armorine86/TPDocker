@@ -53,20 +53,22 @@ services:
       - mariadb1
       - php1
     volumes:
-    - ./requirements/site01/html:/usr/local/apache2/htdocs/
+      - ./requirements/site01/html:/usr/local/apache2/htdocs/
 
   site02:
     image: httpd:alpine
+    container_name: site02
     networks:
       - frontend
     depends_on:
       - mariadb2
       - php2
     volumes:
-    - ./requirements/site02/html:/usr/local/apache2/htdocs/
+      - ./requirements/site02/html:/usr/local/apache2/htdocs/
 
   nginx:
     build: ./requirements/nginx
+    container_name: loadbalancer
     depends_on:
       - site01
       - site02
@@ -76,9 +78,9 @@ services:
     networks:
       - frontend
     volumes:
-        - ./requirements/nginx/conf/default.conf:/etc/nginx/conf.d/default.conf
-        - ./requirements/site01/html:/usr/share/nginx/html/site01.com
-        - ./requirements/site02/html:/usr/share/nginx/html/site02.com
+      - ./requirements/nginx/conf/default.conf:/etc/nginx/conf.d/default.conf
+      - ./requirements/site01/html:/usr/share/nginx/html/site01.com
+      - ./requirements/site02/html:/usr/share/nginx/html/site02.com
 
 networks:
   frontend:
